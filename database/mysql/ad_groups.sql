@@ -2,7 +2,6 @@ CREATE TABLE IF NOT EXISTS `adusrgrp` (
 	`adusrgrpid`             bigint unsigned                           NOT NULL,
 	`name`                   varchar(64)     DEFAULT ''                NOT NULL,
 	`user_type`              integer         DEFAULT '1'               NOT NULL,
-	`status`                 integer         DEFAULT '0'               NOT NULL,
 	PRIMARY KEY (adusrgrpid)
 ) ENGINE=InnoDB;
 CREATE UNIQUE INDEX `adusrgrp_1` ON `adusrgrp` (`name`);
