@@ -133,6 +133,9 @@ $ldap_tab = (new CFormList('list_ldap'))
 			->setAriaRequired()
 );
 
+// LDAP groups fields.
+$ldap_groups_tab = (new CFormList('list_ldap_groups'));
+
 (new CWidget())
 	->setTitle(_('Authentication'))
 	->addItem((new CForm())
@@ -146,6 +149,7 @@ $ldap_tab = (new CFormList('list_ldap'))
 			->addTab('auth', _('Authentication'), $auth_tab)
 			->addTab('http', _('HTTP settings'), $http_tab)
 			->addTab('ldap', _('LDAP settings'), $ldap_tab)
+			->addTab('ldap_groups', _('LDAP groups'), $ldap_groups_tab)
 			->setFooter(makeFormFooter(
 				(new CSubmit('update', _('Update'))),
 				[(new CSubmitButton(_('Test'), 'ldap_test', 1))
