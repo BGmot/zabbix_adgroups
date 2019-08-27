@@ -269,6 +269,10 @@ function zbx_construct_menu(&$main_menu, &$sub_menus, &$page, $action = null) {
 					'label' => _('User groups')
 				],
 				[
+					'url' => 'adusergrps.php',
+					'label' => _('AD groups')
+				],
+				[
 					'url' => 'users.php',
 					'label' => _('Users')
 				],
