@@ -63,6 +63,14 @@ $adGroupFormList->addRow(
 			->setWidth(ZBX_TEXTAREA_STANDARD_WIDTH)
 			->setAriaRequired()
 	);
+
+$userTypeComboBox = new CComboBox('user_type', $data['user_type'], 'submit();', [
+	USER_TYPE_ZABBIX_USER => user_type2str(USER_TYPE_ZABBIX_USER),
+	USER_TYPE_ZABBIX_ADMIN => user_type2str(USER_TYPE_ZABBIX_ADMIN),
+	USER_TYPE_SUPER_ADMIN => user_type2str(USER_TYPE_SUPER_ADMIN)
+]);
+$adGroupFormList->addRow(_('User type for users in this AD group'), $userTypeComboBox);
+
 // append form lists to tab
 $adGroupTab = (new CTabView())
 	->addTab('adGroupTab', _('AD group'), $adGroupFormList);

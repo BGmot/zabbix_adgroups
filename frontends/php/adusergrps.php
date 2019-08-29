@@ -224,6 +224,7 @@ if ($form !== null) {
 		'form' => $form,
 		'name' => getRequest('adgname', ''),
                 'usrgrps' => [],
+		'user_type' => 1,
 		'form_refresh' => getRequest('form_refresh', 0),
 		'value' => getRequest('value', '')
 	];

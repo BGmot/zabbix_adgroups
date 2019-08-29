@@ -155,7 +155,7 @@ class CAdUserGroup extends CApiService {
 		$ins_adusrgrps = [];
 
 		foreach ($adusrgrps as $adusrgrp) {
-			unset($adusrgrp['rgrpids'], $adusrgrp['user_type']);
+			unset($adusrgrp['usgrpids'], $adusrgrp['user_type']);
 			$ins_adusrgrps[] = $adusrgrp;
 		}
 		$adusrgrpids = DB::insert('adusrgrp', $ins_adusrgrps);
