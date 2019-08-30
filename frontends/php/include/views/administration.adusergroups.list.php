@@ -58,9 +58,9 @@ $adGroupTable = (new CTableInfo())
 foreach ($this->data['adusergroups'] as $adusrgrp) {
 	$adGroupId = $adusrgrp['adusrgrpid'];
 
-	if (isset($adusrgrp['usrgrpids'])) {
-		$adGroupUserGroups = $adusrgrp['usrgrpids'];
-		order_result($adGroupUserGroups, 'usrgrpid');
+	if (isset($adusrgrp['usrgrps'])) {
+		$adGroupUserGroups = $adusrgrp['usrgrps'];
+		order_result($adGroupUserGroups, 'name');
 
 		$usergroups = [];
 		$i = 0;
@@ -78,19 +78,22 @@ foreach ($this->data['adusergroups'] as $adusrgrp) {
 				$usergroups[] = ', ';
 			}
 
-			$usergroups[] = (new CLink(getUserGroupName($usergroup), 'usergrps.php?form=update&usergrpid='.$usergroup['usrgrpid']))
-					->addClass(ZBX_STYLE_LINK_ALT)
-					->addClass(ZBX_STYLE_GREEN);
+			$usergroups[] = (new CLink($usergroup['name'], 'usergrps.php?form=update&usergrpid='.$usergroup['usrgrpid']))
+				->addClass($usergroup['gui_access'] == GROUP_GUI_ACCESS_DISABLED
+					|| $usergroup['users_status'] == GROUP_STATUS_DISABLED
+					? ZBX_STYLE_LINK_ALT . ' ' . ZBX_STYLE_RED
+					: ZBX_STYLE_LINK_ALT . ' ' . ZBX_STYLE_GREEN);
 		}
 	}
 
 	$name = new CLink($adusrgrp['name'], 'adusergrps.php?form=update&adusrgrpid='.$adGroupId);
 
-	$userGroupTable->addRow([
+	$adGroupTable->addRow([
 		new CCheckBox('adgroup_groupid['.$adGroupId.']', $adGroupId),
 		(new CCol($name))->addClass(ZBX_STYLE_NOWRAP),
-		[new CLink(_('User groups'), 'usergrps.php?filter_adusrgrpid='.$adGroupId), CViewHelper::showNum(count($adusrgrp['usrgrps']))],
-		$usergroups
+		[new CLink(_('User groups'), 'adusergrps.php?filter_adusrgrpid='.$adGroupId), CViewHelper::showNum(count($adusrgrp['usrgrps']))],
+		$usergroups,
+		user_type2str($adusrgrp['user_type']),
 	]);
 }
 

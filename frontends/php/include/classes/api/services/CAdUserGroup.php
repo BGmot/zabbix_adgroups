@@ -123,7 +123,7 @@ class CAdUserGroup extends CApiService {
 		$sqlParts = $this->applyQueryOutputOptions($this->tableName(), $this->tableAlias(), $options, $sqlParts);
 		$sqlParts = $this->applyQuerySortOptions($this->tableName(), $this->tableAlias(), $options, $sqlParts);
 		$res = DBselect($this->createSelectQueryFromParts($sqlParts), $sqlParts['limit']);
-		while ($usrgrp = DBfetch($res)) {
+		while ($adusrgrp = DBfetch($res)) {
 			if ($options['countOutput']) {
 				$result = $adusrgrp['rowscount'];
 			}
@@ -134,6 +134,19 @@ class CAdUserGroup extends CApiService {
 
 		if ($options['countOutput']) {
 			return $result;
+		}
+
+		// adding user groups
+		if ($options['selectGroups'] !== null && $options['selectGroups'] != API_OUTPUT_COUNT) {
+			$relationMap = $this->createRelationMap($result, 'adusrgrpid', 'usrgrpid', 'adgroups_groups');
+
+			$dbUserGroups = API::UserGroup()->get([
+				'output' => $options['selectGroups'],
+				'usrgrpids' => $relationMap->getRelatedIds(),
+				'preservekeys' => true
+			]);
+
+			$result = $relationMap->mapMany($result, $dbUserGroups, 'usrgrps');
 		}
 
 		// removing keys (hash -> array)
@@ -155,7 +168,7 @@ class CAdUserGroup extends CApiService {
 		$ins_adusrgrps = [];
 
 		foreach ($adusrgrps as $adusrgrp) {
-			unset($adusrgrp['usgrpids'], $adusrgrp['user_type']);
+			unset($adusrgrp['usgrpids']);
 			$ins_adusrgrps[] = $adusrgrp;
 		}
 		$adusrgrpids = DB::insert('adusrgrp', $ins_adusrgrps);
@@ -165,8 +178,7 @@ class CAdUserGroup extends CApiService {
 		}
 		unset($adusrgrp);
 
-		$this->updateUserType($adusrgrps, __FUNCTION__);
-		$this->updateAdUsersGroups($adusrgrps, __FUNCTION__);
+		$this->updateAdGroupsGroups($adusrgrps, __FUNCTION__);
 
 		$this->addAuditBulk(AUDIT_ACTION_ADD, AUDIT_RESOURCE_USER_GROUP, $adusrgrps);
 
@@ -187,7 +199,7 @@ class CAdUserGroup extends CApiService {
 			'name' =>		['type' => API_STRING_UTF8, 'flags' => API_REQUIRED | API_NOT_EMPTY, 'length' => DB::getFieldLength('adusrgrp', 'name')],
 			'user_type' =>		['type' => API_INT32, 'in' => implode(',', [USER_TYPE_ZABBIX_USER, USER_TYPE_ZABBIX_ADMIN, USER_TYPE_SUPER_ADMIN])],
 			'usrgrps' =>		['type' => API_OBJECTS, 'flags' => API_REQUIRED | API_NOT_EMPTY, 'uniq' => [['usrgrpid']], 'fields' => [
-				'usrgrpid' =>		['type' => API_ID, 'flags' => API_REQUIRED]
+			'usrgrpid' =>		['type' => API_ID, 'flags' => API_REQUIRED]
 			]]
 		]];
 		if (!CApiInputValidator::validate($api_input_rules, $adusrgrps, '/', $error)) {
@@ -234,7 +246,6 @@ class CAdUserGroup extends CApiService {
 			DB::update('adusrgrp', $upd_adusrgrps);
 		}
 
-		$this->updateUserType($adusrgrps, __FUNCTION__);
 		$this->updateAdGroupsUserGroups($adusrgrps, __FUNCTION__);
 		$this->addAuditBulk(AUDIT_ACTION_UPDATE, AUDIT_RESOURCE_USER_GROUP, $adusrgrps, $db_adusrgrps);
 
@@ -434,11 +445,11 @@ class CAdUserGroup extends CApiService {
 		$adgroups_groups = [];
 
 		foreach ($adusrgrps as $adusrgrp) {
-			if (array_key_exists('usrgrpids', $adusrgrp)) {
+			if (array_key_exists('usrgrps', $adusrgrp)) {
 				$adgroups_groups[$adusrgrp['adusrgrpid']] = [];
 
-				foreach ($adusrgrp['usrgrpids'] as $usrgrpid) {
-					$adgroups_groups[$adusrgrp['adusrgrpid']][$usrgrpid] = true;
+				foreach ($adusrgrp['usrgrps'] as $usrgrp) {
+					$adgroups_groups[$adusrgrp['adusrgrpid']][$usrgrp['usrgrpid']] = true;
 				}
 			}
 		}
@@ -458,7 +469,7 @@ class CAdUserGroup extends CApiService {
 		$del_ids = [];
 
 		foreach ($db_adgroups_groups as $db_adgroup_group) {
-			if (array_key_exists($db_adgroup_group['usrgrpid'], $gdgroups_groups[$db_adgroup_group['adusrgrpid']])) {
+			if (array_key_exists($db_adgroup_group['usrgrpid'], $adgroups_groups[$db_adgroup_group['adusrgrpid']])) {
 				unset($adgroups_groups[$db_adgroup_group['adusrgrpid']][$db_adgroup_group['usrgrpid']]);
 			}
 			else {

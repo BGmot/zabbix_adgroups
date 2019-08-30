@@ -18,7 +18,6 @@
 ** Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 **/
 
-
 require_once dirname(__FILE__).'/include/config.inc.php';
 //require_once dirname(__FILE__).'/include/triggers.inc.php';
 //require_once dirname(__FILE__).'/include/media.inc.php';
@@ -37,7 +36,7 @@ $fields = [
 	// group
 	'adusrgrpid' =>				[T_ZBX_INT, O_OPT, P_SYS,	DB_ID,		'isset({form}) && {form} == "update"'],
 	'adgname' =>				[T_ZBX_STR, O_OPT, null,	NOT_EMPTY,	'isset({add}) || isset({update})', _('AD Group name')],
-	'adgroup_groups' =>			[T_ZBX_STR, O_OPT, null,	NOT_EMPTY,	null],
+	'user_groups' =>			[T_ZBX_STR, O_OPT, null,	NOT_EMPTY,	null],
 	'user_type' =>				[T_ZBX_INT, O_OPT, null,	IN('1,2,3'),	'isset({add}) || isset({update})'],
 	// actions
 	'action' =>				[T_ZBX_STR, O_OPT, P_SYS|P_ACT,
@@ -98,35 +97,21 @@ elseif (hasRequest('action')) {
  * Actions
  */
 if (hasRequest('add') || hasRequest('update')) {
-	$user_group = [
-		'name' => getRequest('gname'),
-		'users_status' => getRequest('users_status', GROUP_STATUS_DISABLED),
-		'gui_access' => getRequest('gui_access'),
-		'debug_mode' => getRequest('debug_mode', GROUP_DEBUG_MODE_DISABLED),
-		'userids' => getRequest('userids', []),
-		'tag_filters' => getRequest('tag_filters', []),
-		'rights' => []
+	$usrgrps = getRequest('user_groups', []);
+	$aduser_group = [
+		'name' => getRequest('adgname'),
+		'usrgrps' => zbx_toObject($usrgrps, 'usrgrpid'),
+		'user_type' => getRequest('user_type')
 	];
 
-	$groups_rights = applyHostGroupRights(getRequest('groups_rights', []));
-
-	foreach ($groups_rights as $groupid => $group_rights) {
-		if ($groupid != 0 && $group_rights['permission'] != PERM_NONE) {
-			$user_group['rights'][] = [
-				'id' => (string) $groupid,
-				'permission' => $group_rights['permission']
-			];
-		}
-	}
-
 	if (hasRequest('add')) {
-		$result = (bool) API::UserGroup()->create($user_group);
-		show_messages($result, _('Group added'), _('Cannot add group'));
+		$result = (bool) API::AdUserGroup()->create($aduser_group);
+		show_messages($result, _('AD group added'), _('Cannot add AD group'));
 	}
 	else {
-		$user_group['usrgrpid'] = getRequest('usrgrpid');
-		$result = (bool) API::UserGroup()->update($user_group);
-		show_messages($result, _('Group updated'), _('Cannot update group'));
+		$aduser_group['adusrgrpid'] = getRequest('adusrgrpid');
+		$result = (bool) API::AdUserGroup()->update($aduser_group);
+		show_messages($result, _('AD group updated'), _('Cannot update AD group'));
 	}
 
 	if ($result) {
