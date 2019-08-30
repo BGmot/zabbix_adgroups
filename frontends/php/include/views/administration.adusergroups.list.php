@@ -50,7 +50,6 @@ $adGroupTable = (new CTableInfo())
 			(new CCheckBox('all_adgroups'))->onClick("checkAll('".$adGroupsForm->getName()."','all_adgroups','adgroup_groupid');")
 		))->addClass(ZBX_STYLE_CELL_WIDTH),
 		make_sorting_header(_('Name'), 'name', $data['sort'], $data['sortorder'], 'adusergrps.php'),
-		'#',
 		_('User groups'),
 		_('User type')
 	]);
@@ -91,7 +90,6 @@ foreach ($this->data['adusergroups'] as $adusrgrp) {
 	$adGroupTable->addRow([
 		new CCheckBox('adgroup_groupid['.$adGroupId.']', $adGroupId),
 		(new CCol($name))->addClass(ZBX_STYLE_NOWRAP),
-		[new CLink(_('User groups'), 'adusergrps.php?filter_adusrgrpid='.$adGroupId), CViewHelper::showNum(count($adusrgrp['usrgrps']))],
 		$usergroups,
 		user_type2str($adusrgrp['user_type']),
 	]);
