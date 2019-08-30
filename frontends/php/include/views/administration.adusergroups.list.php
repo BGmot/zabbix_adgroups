@@ -78,7 +78,7 @@ foreach ($this->data['adusergroups'] as $adusrgrp) {
 				$usergroups[] = ', ';
 			}
 
-			$usergroups[] = (new CLink($usergroup['name'], 'usergrps.php?form=update&usergrpid='.$usergroup['usrgrpid']))
+			$usergroups[] = (new CLink($usergroup['name'], 'usergrps.php?form=update&usrgrpid='.$usergroup['usrgrpid']))
 				->addClass($usergroup['gui_access'] == GROUP_GUI_ACCESS_DISABLED
 					|| $usergroup['users_status'] == GROUP_STATUS_DISABLED
 					? ZBX_STYLE_LINK_ALT . ' ' . ZBX_STYLE_RED
