@@ -42,7 +42,7 @@ $adGroupFormList = (new CFormList())
 	);
 
 $user_groups = [];
-foreach ($data['usrgrps'] as $group) {
+foreach ($data['groups'] as $group) {
 	$user_groups[] = CArrayHelper::renameKeys($group, ['usrgrpid' => 'id']);
 }
 $adGroupFormList->addRow(

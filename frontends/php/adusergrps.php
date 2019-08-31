@@ -219,12 +219,11 @@ if ($form !== null) {
 		$data['user_type'] = getRequest('user_type', $db_aduser_group['user_type']);
 	}
 
-	$userGroups = API::UserGroup()->get([
-		'output' => ['usrgrpid'],
+	$data['groups'] = API::UserGroup()->get([
+		'output' => ['usrgrpid', 'name'],
 		'adusrgrpids' => getRequest('adusrgrpid', 0)
 	]);
-	$userGroup = zbx_objectValues($userGroups, 'usrgrpid');
-	$data['user_groups']	= zbx_toHash($userGroup);
+	order_result($data['groups'], 'name');
 
 	// render view
 	$view = new CView('administration.adusergroups.edit', $data);
