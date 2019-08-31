@@ -68,9 +68,8 @@ $form = getRequest('form');
  */
 if (hasRequest('adusrgrpid')) {
 	$db_aduser_group = API::AdUserGroup()->get([
-		'adusrgrpid' => getRequest('adusrgrpid'),
-		'output' => API_OUTPUT_EXTEND,
-		'editable' => true
+		'output' => ['adusrgrpid', 'name', 'user_type'],
+		'adusrgrpids' => getRequest('adusrgrpid')
 	]);
 
 	if (!$db_aduser_group) {
@@ -213,6 +212,19 @@ if ($form !== null) {
 		'form_refresh' => getRequest('form_refresh', 0),
 		'value' => getRequest('value', '')
 	];
+
+	if ($data['adusrgrpid'] != 0) {
+		$db_aduser_group = reset($db_aduser_group);
+		$data['name'] = getRequest('adgname', $db_aduser_group['name']);
+		$data['user_type'] = getRequest('user_type', $db_aduser_group['user_type']);
+	}
+
+	$userGroups = API::UserGroup()->get([
+		'output' => ['usrgrpid'],
+		'adusrgrpids' => getRequest('adusrgrpid', 0)
+	]);
+	$userGroup = zbx_objectValues($userGroups, 'usrgrpid');
+	$data['user_groups']	= zbx_toHash($userGroup);
 
 	// render view
 	$view = new CView('administration.adusergroups.edit', $data);
