@@ -1948,7 +1948,7 @@ return [
 				'length' => 64,
 				'default' => '',
 			],
-			'type' => [
+			'user_type' => [
 				'null' => false,
 				'type' => DB::FIELD_TYPE_INT,
 				'length' => 10,
