@@ -64,7 +64,7 @@ $adGroupFormList->addRow(
 			->setAriaRequired()
 	);
 
-$userTypeComboBox = new CComboBox('user_type', $data['user_type'], 'submit();', [
+$userTypeComboBox = new CComboBox('user_type', $data['user_type'], null, [
 	USER_TYPE_ZABBIX_USER => user_type2str(USER_TYPE_ZABBIX_USER),
 	USER_TYPE_ZABBIX_ADMIN => user_type2str(USER_TYPE_ZABBIX_ADMIN),
 	USER_TYPE_SUPER_ADMIN => user_type2str(USER_TYPE_SUPER_ADMIN)
