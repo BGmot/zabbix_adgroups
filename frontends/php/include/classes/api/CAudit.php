@@ -162,6 +162,12 @@ class CAudit {
 				$table_name = 'usrgrp';
 				break;
 
+			case AUDIT_RESOURCE_AD_GROUP:
+				$field_name_resourceid = 'adusrgrpid';
+				$field_name_resourcename = 'name';
+				$table_name = 'adusrgrp';
+				break;
+
 			case AUDIT_RESOURCE_VALUE_MAP:
 				$field_name_resourceid = 'valuemapid';
 				$field_name_resourcename = 'name';

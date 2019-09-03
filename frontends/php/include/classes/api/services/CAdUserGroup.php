@@ -180,7 +180,7 @@ class CAdUserGroup extends CApiService {
 
 		$this->updateAdGroupsGroups($adusrgrps, __FUNCTION__);
 
-		$this->addAuditBulk(AUDIT_ACTION_ADD, AUDIT_RESOURCE_USER_GROUP, $adusrgrps);
+		$this->addAuditBulk(AUDIT_ACTION_ADD, AUDIT_RESOURCE_AD_GROUP, $adusrgrps);
 
 		return ['adusrgrpids' => $adusrgrpids];
 	}
@@ -247,7 +247,7 @@ class CAdUserGroup extends CApiService {
 		}
 
 		$this->updateAdGroupsUserGroups($adusrgrps, __FUNCTION__);
-		$this->addAuditBulk(AUDIT_ACTION_UPDATE, AUDIT_RESOURCE_USER_GROUP, $adusrgrps, $db_adusrgrps);
+		$this->addAuditBulk(AUDIT_ACTION_UPDATE, AUDIT_RESOURCE_AD_GROUP, $adusrgrps, $db_adusrgrps);
 
 		return ['adusrgrpids'=> zbx_objectValues($adusrgrps, 'adusrgrpid')];
 	}
@@ -506,7 +506,7 @@ class CAdUserGroup extends CApiService {
 		DB::delete('adgroups_groups', ['adusrgrpid' => $adusrgrpids]);
 		DB::delete('adusrgrp', ['adusrgrpid' => $adusrgrpids]);
 
-		$this->addAuditBulk(AUDIT_ACTION_DELETE, AUDIT_RESOURCE_USER_GROUP, $db_adusrgrps);
+		$this->addAuditBulk(AUDIT_ACTION_DELETE, AUDIT_RESOURCE_AD_GROUP, $db_adusrgrps);
 
 		return ['adusrgrpids' => $adusrgrpids];
 	}
