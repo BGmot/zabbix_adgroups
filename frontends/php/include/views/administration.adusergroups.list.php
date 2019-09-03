@@ -61,23 +61,23 @@ foreach ($this->data['adusergroups'] as $adusrgrp) {
 		$adGroupUserGroups = $adusrgrp['usrgrps'];
 		order_result($adGroupUserGroups, 'name');
 
-		$usergroups = [];
+		$userGroups = [];
 		$i = 0;
 
 		foreach ($adGroupUserGroups as $usergroup) {
 			$i++;
 
 			if ($i > $this->data['config']['max_in_table']) {
-				$usergroups[] = ' &hellip;';
+				$userGroups[] = ' &hellip;';
 
 				break;
 			}
 
-			if ($usergroups) {
-				$usergroups[] = ', ';
+			if ($userGroups) {
+				$userGroups[] = ', ';
 			}
 
-			$usergroups[] = (new CLink($usergroup['name'], 'usergrps.php?form=update&usrgrpid='.$usergroup['usrgrpid']))
+			$userGroups[] = (new CLink($usergroup['name'], 'usergrps.php?form=update&usrgrpid='.$usergroup['usrgrpid']))
 				->addClass($usergroup['gui_access'] == GROUP_GUI_ACCESS_DISABLED
 					|| $usergroup['users_status'] == GROUP_STATUS_DISABLED
 					? ZBX_STYLE_LINK_ALT . ' ' . ZBX_STYLE_RED
@@ -90,7 +90,7 @@ foreach ($this->data['adusergroups'] as $adusrgrp) {
 	$adGroupTable->addRow([
 		new CCheckBox('adgroup_groupid['.$adGroupId.']', $adGroupId),
 		(new CCol($name))->addClass(ZBX_STYLE_NOWRAP),
-		$usergroups,
+		$userGroups,
 		user_type2str($adusrgrp['user_type']),
 	]);
 }

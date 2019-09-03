@@ -36,6 +36,7 @@ $fields = [
 	// group
 	'adusrgrpid' =>				[T_ZBX_INT, O_OPT, P_SYS,	DB_ID,		'isset({form}) && {form} == "update"'],
 	'adgname' =>				[T_ZBX_STR, O_OPT, null,	NOT_EMPTY,	'isset({add}) || isset({update})', _('AD Group name')],
+	'adgroup_groupid' =>			[T_ZBX_INT, O_OPT, P_SYS,	DB_ID,		null],
 	'user_groups' =>			[T_ZBX_STR, O_OPT, null,	NOT_EMPTY,	null],
 	'user_type' =>				[T_ZBX_INT, O_OPT, null,	IN('1,2,3'),	'isset({add}) || isset({update})'],
 	// actions
@@ -130,67 +131,12 @@ elseif (hasRequest('delete')) {
 elseif (hasRequest('action')) {
 	$action = getRequest('action');
 	$result = false;
-
 	switch ($action) {
-		case 'usergroup.massdelete':
-			if (hasRequest('group_groupid')) {
-				$result = (bool) API::UserGroup()->delete(getRequest('group_groupid'));
-				show_messages($result, _('Group deleted'), _('Cannot delete group'));
+		case 'adusergroup.massdelete':
+			if (hasRequest('adgroup_groupid')) {
+				$result = (bool) API::AdUserGroup()->delete(getRequest('adgroup_groupid'));
+				show_messages($result, _('AD group deleted'), _('Cannot delete AD group'));
 			}
-			break;
-
-		case 'usergroup.set_gui_access':
-			$user_groups = [];
-
-			foreach ((array) getRequest('group_groupid', getRequest('usrgrpid')) as $usrgrpid) {
-				$user_groups[] = [
-					'usrgrpid' => $usrgrpid,
-					'gui_access' => getRequest('set_gui_access')
-				];
-			}
-
-			$result = (bool) API::UserGroup()->update($user_groups);
-			show_messages($result, _('Frontend access updated'), _('Cannot update frontend access'));
-			break;
-
-		case 'usergroup.massenabledebug':
-		case 'usergroup.massdisabledebug':
-			$user_groups = [];
-
-			foreach ((array) getRequest('group_groupid', getRequest('usrgrpid')) as $usrgrpid) {
-				$user_groups[] = [
-					'usrgrpid' => $usrgrpid,
-					'debug_mode' => ($action === 'usergroup.massenabledebug')
-						? GROUP_DEBUG_MODE_ENABLED
-						: GROUP_DEBUG_MODE_DISABLED
-				];
-			}
-
-			$result = (bool) API::UserGroup()->update($user_groups);
-			show_messages($result, _('Debug mode updated'), _('Cannot update debug mode'));
-			break;
-
-		case 'usergroup.massenable':
-		case 'usergroup.massdisable':
-			$user_groups = [];
-
-			foreach ((array) getRequest('group_groupid', getRequest('usrgrpid')) as $usrgrpid) {
-				$user_groups[] = [
-					'usrgrpid' => $usrgrpid,
-					'users_status' => ($action === 'usergroup.massenable')
-						? GROUP_STATUS_ENABLED
-						: GROUP_STATUS_DISABLED
-				];
-			}
-
-			$result = (bool) API::UserGroup()->update($user_groups);
-			$message_success = ($action === 'usergroup.massenable')
-				? _n('User group enabled', 'User groups enabled', count($user_groups))
-				: _n('User group disabled', 'User groups disabled', count($user_groups));
-			$message_failed = ($action === 'usergroup.massenable')
-				? _n('Cannot enable user group', 'Cannot enable user groups', count($user_groups))
-				: _n('Cannot disable user group', 'Cannot disable user groups', count($user_groups));
-			show_messages($result, $message_success, $message_failed);
 			break;
 	}
 
