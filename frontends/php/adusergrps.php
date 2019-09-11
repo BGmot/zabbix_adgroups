@@ -120,8 +120,8 @@ if (hasRequest('add') || hasRequest('update')) {
 	}
 }
 elseif (hasRequest('delete')) {
-	$result = (bool) API::UserGroup()->delete([getRequest('usrgrpid')]);
-	show_messages($result, _('Group deleted'), _('Cannot delete group'));
+	$result = (bool) API::AdUserGroup()->delete([getRequest('adusrgrpid')]);
+	show_messages($result, _('AD group deleted'), _('Cannot delete AD group'));
 
 	if ($result) {
 		uncheckTableRows();
