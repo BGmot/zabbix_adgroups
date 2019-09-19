@@ -1213,7 +1213,7 @@ class CUser extends CApiService {
 					$medias = [
 						[
 							'mediatypeid' => 1,
-							'sendto' => $user_info['mail'][0],
+							'sendto' => [$user_info['mail'][0]],
 							'active' => 1,
 							'severity' => 63,
 							'period' => '1-7,00:00-24:00'
