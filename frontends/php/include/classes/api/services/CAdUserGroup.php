@@ -267,7 +267,9 @@ class CAdUserGroup extends CApiService {
 			'adusrgrpid' =>		['type' => API_ID, 'flags' => API_REQUIRED],
 			'name' =>		['type' => API_STRING_UTF8, 'flags' => API_NOT_EMPTY, 'length' => DB::getFieldLength('adusrgrp', 'name')],
 			'user_type' =>		['type' => API_INT32, 'in' => implode(',', [USER_TYPE_ZABBIX_USER, USER_TYPE_ZABBIX_ADMIN, USER_TYPE_SUPER_ADMIN])],
-			'usrgrpids' =>		['type' => API_IDS, 'flags' => API_NORMALIZE]
+			'usrgrps' =>		['type' => API_OBJECTS, 'flags' => API_REQUIRED | API_NOT_EMPTY, 'uniq' => [['usrgrpid']], 'fields' => [
+			'usrgrpid' =>		['type' => API_ID, 'flags' => API_REQUIRED]
+			]]
 		]];
 		if (!CApiInputValidator::validate($api_input_rules, $adusrgrps, '/', $error)) {
 			self::exception(ZBX_API_ERROR_PARAMETERS, $error);
@@ -550,5 +552,65 @@ class CAdUserGroup extends CApiService {
 		}
 
 		$this->checkAdGroupsWithoutUserGroups($adusrgrps);
+	}
+
+	/**
+	 * Update table "adgroups_groups".
+	 *
+	 * @param array  $adusrgrps
+	 * @param string $method
+	 */
+	private function updateAdGroupsUserGroups(array $adusrgrps, $method) {
+		$users_groups = [];
+
+		foreach ($adusrgrps as $adusrgrp) {
+			if (array_key_exists('usrgrps', $adusrgrp)) {
+				$users_groups[$adusrgrp['adusrgrpid']] = [];
+
+				foreach ($adusrgrp['usrgrps'] as $usrgrp) {
+					$users_groups[$adusrgrp['adusrgrpid']][$usrgrp['usrgrpid']] = true;
+				}
+			}
+		}
+
+		if (!$users_groups) {
+			return;
+		}
+
+		$db_adgroups_groups = ($method === 'update')
+			? DB::select('adgroups_groups', [
+				'output' => ['id', 'usrgrpid', 'adusrgrpid'],
+				'filter' => ['adusrgrpid' => array_keys($users_groups)]
+			])
+			: [];
+
+		$ins_users_groups = [];
+		$del_ids = [];
+
+		foreach ($db_adgroups_groups as $db_adgroup_group) {
+			if (array_key_exists($db_adgroup_group['usrgrpid'], $users_groups[$db_adgroup_group['adusrgrpid']])) {
+				unset($users_groups[$db_adgroup_group['adusrgrpid']][$db_adgroup_group['usrgrpid']]);
+			}
+			else {
+				$del_ids[] = $db_adgroup_group['id'];
+			}
+		}
+
+		foreach ($users_groups as $adusrgrpid => $usrgrpids) {
+			foreach (array_keys($usrgrpids) as $usrgrpid) {
+				$ins_users_groups[] = [
+					'adusrgrpid' => $adusrgrpid,
+					'usrgrpid' => $usrgrpid
+				];
+			}
+		}
+
+		if ($ins_users_groups) {
+			DB::insertBatch('adgroups_groups', $ins_users_groups);
+		}
+
+		if ($del_ids) {
+			DB::delete('adgroups_groups', ['id' => $del_ids]);
+		}
 	}
 }
