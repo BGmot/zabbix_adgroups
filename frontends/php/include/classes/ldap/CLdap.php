@@ -172,7 +172,7 @@ class CLdap {
 
 			$this->bound = 1;
 
-			return true;
+			return $this->getUserData($user);
 		}
 		else {
 			// see if we can find the user
@@ -194,7 +194,7 @@ class CLdap {
 
 			$this->bound = 1;
 
-			return true;
+			return $this->info;
 		}
 
 		return false;
@@ -254,7 +254,7 @@ class CLdap {
 		}
 		$user_result = zbx_array_merge($info,$user_result);
 
-		return $info;
+		return $user_result;
 	}
 
 	private function makeFilter($filter, $placeholders) {
