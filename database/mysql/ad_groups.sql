@@ -13,4 +13,5 @@ CREATE TABLE IF NOT EXISTS `adgroups_groups` (
 ) ENGINE=InnoDB;
 CREATE UNIQUE INDEX `adgroups_groups_1` ON `adgroups_groups` (`usrgrpid`,`adusrgrpid`);
 CREATE INDEX `adgroups_groups_2` ON `adgroups_groups` (`adusrgrpid`);
-
+ALTER TABLE `adgroups_groups` ADD CONSTRAINT `c_adgroups_groups_1` FOREIGN KEY (`usrgrpid`) REFERENCES `usrgrp` (`usrgrpid`) ON DELETE CASCADE;
+ALTER TABLE `adgroups_groups` ADD CONSTRAINT `c_adgroups_groups_2` FOREIGN KEY (`adusrgrpid`) REFERENCES `adusrgrp` (`adusrgrpid`) ON DELETE CASCADE;
