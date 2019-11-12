@@ -1,3 +1,13 @@
+*** OBSOLETE ***
+
+Please use
+
+https://github.com/BGmot/zabbix
+
+https://github.com/BGmot/zabbix-docker
+
+****************
+
 This repository contains necessary changes to Zabbix Server v4.2.5 to implement users authentication against Active Directory (LDAP) based on their AD group membership. You can see all the diffs here so probably will be able to apply to other Zabbix Server versions too.
  
 * Implemented logic
